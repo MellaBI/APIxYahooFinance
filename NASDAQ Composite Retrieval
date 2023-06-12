@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat May 27 15:56:59 2023
+
+@author: melvinzhang
+"""
+
+import pandas as pd
+import datetime
+df_csv = pd.read_csv('/Users/melvinzhang/Downloads/^IXIC (1).csv')
+df_csv['Date'] = pd.to_datetime(df_csv['Date']).dt.strftime('%Y-%m-%d')
+df_csv['Date'] = df_csv['Date']
+df_csv.set_index('Date', inplace=True)
+df_excel = pd.read_excel('/Users/melvinzhang/Documents/IBEB ERASMUS SCHOOL OF ECONOMICS/B3/Financial Economics/Thesis/Data/WTH/FULL DATA SET/wth SVI API data.xlsx')
+# vix_list = df_csv['CLOSE'].to_list()
+# vix_date = df.csv['DATE'].to_list()
+date_list = df_excel['ipodate'].to_list()
+volume_nq = []
+for i in date_list:
+    volume_nq.append(df_csv.loc[i,'Volume'])
+df_excel['tvnq'] = volume_nq
+    
+df_excel.to_excel('/Users/melvinzhang/Documents/IBEB ERASMUS SCHOOL OF ECONOMICS/B3/Financial Economics/Thesis/Data/WTH/FULL DATA SET/wth SVI API data.xlsx')
+
