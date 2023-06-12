@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 16 10:05:29 2023
+
+@author: melvinzhang
+"""
+
+# import modules
+import datetime
+# import requests
+import pandas as pd
+from math import ceil
+from pytrends.request import TrendReq
+import time
+
+# connect to google
+pytrends = TrendReq(hl='en-US', tz=360)
+df_excel = pd.read_excel('/Users/melvinzhang/Documents/IBEB ERASMUS SCHOOL OF ECONOMICS/B3/Financial Economics/Thesis/Data/WTH/wth data updated for ASV.xls')
+# ticker = df_excel['companyname'].iloc[4:9]
+# date = df_excel['ipodate'].iloc[4:9]
+# date_list = date.to_list()
+# ticker_list = ticker.to_list()
+
+# for i in range(len(date_list)):
+#     a_date_str = pd.to_datetime(date_list[i]).strftime('%Y-%m-%d')
+#     a_start_date = pd.to_datetime(date_list[i]) - datetime.timedelta(days=28)
+#     a_end_date = pd.to_datetime(date_list[i])
+#     a_timeframe = f"{a_start_date.strftime('%Y-%m-%d')} {a_end_date.strftime('%Y-%m-%d')}"
+#     pytrends.build_payload(ticker_list, cat=0, timeframe=a_timeframe, geo='', gprop='')
+
+#     iot = pytrends.interest_over_time()
+#     print(iot)
+
+list_7 = []
+list_28 = []
+
+length_of_df = ceil(len(df_excel))
+# for i in range(0, length_of_df):
+    #%%
+    # if (i > 0):
+    #     print("{}/{}: I'm pausing to not break".format(i, length_of_df - 1))
+    #     time.sleep(20)
+    # if i == length_of_df-1:
+    #     start_index = i*5
+    #     end_index = len(df_excel)
+    # else:
+    #     start_index = i*5
+    #     end_index = start_index + 5
+    # ticker = df_excel['symbol'].iloc[start_index:end_index]
+    # date = df_excel['ipodate'].iloc[start_index:end_index]
+    # date_list = date.to_list()
+    # ticker_list = ticker.to_list()
+    #%%
+
+for i in range(0, len(df_excel)):
+    if (i > 0) and (i % 20 == 0):
+        print("CATCHING MY BREATH")
+        time.sleep(20)
+    
+    ticker = [df_excel['symbol'].iloc[i]]
+    date = df_excel['ipodate'].iloc[i]
+    
+    a_date_str = pd.to_datetime(date).strftime('%Y-%m-%d')
+    a_start_date = pd.to_datetime(date) - datetime.timedelta(days=7)
+    a_end_date = pd.to_datetime(date)
+    a_timeframe = f"{a_start_date.strftime('%Y-%m-%d')} {a_end_date.strftime('%Y-%m-%d')}"
+    pytrends.build_payload(ticker, cat=0, timeframe=a_timeframe, geo='', gprop='')
+    iot_7 = pytrends.interest_over_time()
+    if iot_7.empty:
+        list_7.append(0)
+    else:
+        list_7.append(iot_7.iloc[0,0])
+    
+    b_date_str = pd.to_datetime(date).strftime('%Y-%m-%d')
+    b_start_date = pd.to_datetime(date) - datetime.timedelta(days=28)
+    b_end_date = pd.to_datetime(date)
+    b_timeframe = f"{b_start_date.strftime('%Y-%m-%d')} {b_end_date.strftime('%Y-%m-%d')}"
+    pytrends.build_payload(ticker, cat=0, timeframe=b_timeframe, geo='', gprop='')
+    iot_28 = pytrends.interest_over_time()
+    if iot_28.empty:
+        list_28.append(0)
+    else:
+        list_28.append(iot_28.iloc[0,0])
+    print('{}/{}: {} Success JWZ'.format(i+1,len(df_excel),ticker))
+    
+    
+#%%
+
+    # for i in range(len(date_list)):
+    #     #%%
+    #     a_date_str = pd.to_datetime(date_list[i]).strftime('%Y-%m-%d')
+    #     a_start_date = pd.to_datetime(date_list[i]) - datetime.timedelta(days=7)
+    #     a_end_date = pd.to_datetime(date_list[i])
+    #     a_timeframe = f"{a_start_date.strftime('%Y-%m-%d')} {a_end_date.strftime('%Y-%m-%d')}"
+    #     pytrends.build_payload(ticker_list, cat=0, timeframe=a_timeframe, geo='', gprop='')
+    #     iot_7 = pytrends.interest_over_time()
+    #     list_7.extend(list(iot_7.iloc[0,:])[:-1])
+        
+    #     b_date_str = pd.to_datetime(date_list[i]).strftime('%Y-%m-%d')
+    #     b_start_date = pd.to_datetime(date_list[i]) - datetime.timedelta(days=28)
+    #     b_end_date = pd.to_datetime(date_list[i])
+    #     b_timeframe = f"{b_start_date.strftime('%Y-%m-%d')} {b_end_date.strftime('%Y-%m-%d')}"
+    #     pytrends.build_payload(ticker_list, cat=0, timeframe=b_timeframe, geo='', gprop='')
+    #     iot_28 = pytrends.interest_over_time()
+    #     list_28.extend(list(iot_28.iloc[0,:])[:-1])
+    # print(iot_7, iot_28)
+#%%
+df_excel['7daysago'] = list_7
+df_excel['28daysago'] = list_28
+df_excel.to_excel('/Users/melvinzhang/Documents/IBEB ERASMUS SCHOOL OF ECONOMICS/B3/Financial Economics/Thesis/Data/WTH/wth SVI API data.xlsx', index=False)
+
+
+        
