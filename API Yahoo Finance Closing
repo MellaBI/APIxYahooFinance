@@ -38,3 +38,5 @@ for i in range(0, len(ticker_list)):
         empty.append(ticker)
         
 df_excel.to_excel('/Users/melvinzhang/Documents/IBEB ERASMUS SCHOOL OF ECONOMICS/B3/Financial Economics/Thesis/Data/wth data updated.xlsx', index=False)
+
+CITATION.cff
