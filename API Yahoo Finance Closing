@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun May  7 18:54:45 2023
+
+@author: melvinzhang
+"""
+import time
+import datetime 
+import pandas as pd
+df_excel = pd.read_excel('/Users/melvinzhang/Documents/IBEB ERASMUS SCHOOL OF ECONOMICS/B3/Financial Economics/Thesis/Data/WTH/wth data.xls')
+ticker_list = df_excel['Symbol'].to_list()
+ipo_date = df_excel['IPO Date'].to_list()
+empty = []
+interval = '1d'
+for i in range(0, len(ticker_list)):
+    ticker = ticker_list[i]
+    year = int(ipo_date[i][0:4])
+    month = int(ipo_date[i][5:7])
+    day = int(ipo_date[i][8:])
+    print(year, month, day, ticker)
+    start_date = datetime.datetime(year, month, day, 23, 59)
+    end_date = start_date + datetime.timedelta(days=1)
+    period1 = int(time.mktime(start_date.timetuple()))
+    period2 = int(time.mktime(end_date.timetuple()))
+
+
+    query_s = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
+    
+    try: 
+        df = pd.read_csv(query_s)
+        if not df.empty:
+            df_excel.loc[df_excel['Symbol'] == ticker, 'F Close'] = df.iloc[0]['Close']
+
+        print(f'{ticker}:\n{df}\n')
+    
+    except:
+        empty.append(ticker)
+        
+df_excel.to_excel('/Users/melvinzhang/Documents/IBEB ERASMUS SCHOOL OF ECONOMICS/B3/Financial Economics/Thesis/Data/wth data updated.xlsx', index=False)
